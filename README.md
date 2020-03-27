@@ -1,3 +1,16 @@
+
+three.js
+========
+记录webgl 库 treejs的demo,在目录E:\GitHub\three.js\aMyTest
+网址记录
+```$xslt
+ TreeJs教程：http://www.webgl3d.cn/Three.js/  
+ 中文文档：http://www.yanhuangxueyuan.com/threejs/docs/index.html   
+ 零基础入门教程：http://www.yanhuangxueyuan.com/WebGL/
+ treejs中文网：http://www.webgl3d.cn/
+```  
+
+
 three.js
 ========
 
