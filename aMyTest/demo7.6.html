@@ -3,7 +3,7 @@
 
 <head>
 	<meta charset="UTF-8">
-	<title>几何体对象、曲线、三维建模</title>
+	<title>旋转造型LatheGeometry</title>
 	<style>
 		body {
 			margin: 0;
@@ -13,8 +13,8 @@
 	</style>
 	<!--引入three.js三维引擎-->
 	<!--<script src="http://www.yanhuangxueyuan.com/versions/threejsR92/build/three.js"></script>-->
-	 <!--<script src="./three.js"></script>-->
-	 <script src="../build/three.js"></script>
+	<!--<script src="./three.js"></script>-->
+	<script src="../build/three.js"></script>
 	<!-- <script src="http://www.yanhuangxueyuan.com/threejs/build/three.js"></script> -->
 	<script src="../examples/js/controls/OrbitControls.js"></script>
 </head>
@@ -27,51 +27,40 @@
 	var scene = new THREE.Scene();
 
 
+	// 样条曲线插值计算
+	// 借助Shape对象的方法.splineThru()，把上面的三个顶点进行样条插值计算， 可以得到一个光滑的旋转曲面。
 
-/*
-	//通过arcCure方法获得圆弧
-	var geometry = new THREE.Geometry(); //声明一个几何体对象Geometry
-	//参数：0, 0圆弧坐标原点x，y  100：圆弧半径    0, 2 * Math.PI：圆弧起始角度
-	var arc = new THREE.ArcCurve(0, 0, 100, 0, 2 * Math.PI);
-	//getPoints是基类Curve的方法，返回一个vector2对象作为元素组成的数组
-	var points = arc.getPoints(50);//分段数50，返回51个顶点
-	// setFromPoints方法从points中提取数据改变几何体的顶点属性vertices
-	geometry.setFromPoints(points);
-	//材质对象
-	var material = new THREE.LineBasicMaterial({
-		color: 0x000000
-	});
-	//线条模型对象
-	var line = new THREE.Line(geometry, material);
-	scene.add(line); //线条对象添加到场景中
-*/
-
-//通过三角函数获得圆弧
-	var geometry = new THREE.Geometry(); //声明一个几何体对象Geometry
-	var R = 100; //圆弧半径
-	var N = 50; //分段数量
-	// 批量生成圆弧上的顶点数据
-	for (var i = 0; i < N; i++) {
-		var angle = 2 * Math.PI / N * i;
-		var x = R * Math.sin(angle);
-		var y = R * Math.cos(angle);
-		geometry.vertices.push(new THREE.Vector3(x, y, 0));
-	}
-	// 插入最后一个点，line渲染模式下，产生闭合效果
-	// geometry.vertices.push(geometry.vertices[0])
-	//材质对象
-	var material = new THREE.LineBasicMaterial({
-		color: 0x000000
-	});
-	//线条模型对象
-	var line = new THREE.Line(geometry, material);
-	scene.add(line); //线条对象添加到场景中
+	var shape = new THREE.Shape();//创建Shape对象
+	var points = [//定位定点
+		new THREE.Vector2(50, 60),
+		new THREE.Vector2(25, 0),
+		new THREE.Vector2(50, -60)
+	];
+	shape.splineThru(points);//顶点带入样条插值计算函数
+	var splinePoints = shape.getPoints(20);//插值计算细分数20
+	var geometry = new THREE.LatheGeometry(splinePoints, 30);//旋转造型
 
 
+	/**
+	 * 创建旋转网格模型
+	 */
+/*	var points = [
+		new THREE.Vector2(50, 60),
+		new THREE.Vector2(25, 0),
+		new THREE.Vector2(50, -60)
+	];
+	var geometry = new THREE.LatheGeometry(points, 30);
+
+	*/
+	var material = new THREE.MeshPhongMaterial({
+		color: 0x0000ff,//三角面颜色
+		side: THREE.DoubleSide//两面可见
+	});//材质对象
+	material.wireframe = true;//线条模式渲染(查看细分数)
 
 
-
-
+	var mesh = new THREE.Mesh(geometry, material);//旋转网格模型对象
+	scene.add(mesh);//旋转网格模型添加到场景中
 
 
 	/**
@@ -103,18 +92,17 @@
 	document.body.appendChild(renderer.domElement); //body元素中插入canvas对象
 
 	function render() {
-		renderer.render(scene,camera);//执行渲染操作
+		renderer.render(scene, camera);//执行渲染操作
 		requestAnimationFrame(render);//请求再次执行渲染函数render
 	}
-	render();
-	var controls = new THREE.OrbitControls(camera,renderer.domElement);//创建控件对象
 
+	render();
+	var controls = new THREE.OrbitControls(camera, renderer.domElement);//创建控件对象
 
 
 	//辅助线
 	var axisHelper = new THREE.AxisHelper(250);
 	scene.add(axisHelper);
-
 
 
 </script>
